@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة الحب</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #ffdde1, #ee9ca7);
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            text-align: center;
+        }
+        header {
+            padding: 30px 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-bottom: 2px solid #fff;
+        }
+        header h1 {
+            margin: 0;
+            color: #fff;
+            font-size: 2.5em;
+        }
+        main {
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        input, textarea, select {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            font-size: 1em;
+        }
+        button {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 8px;
+            background-color: #ff6b81;
+            color: #fff;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #ff4757;
+        }
+        .messages {
+            margin-top: 30px;
+            text-align: right;
+        }
+        .message {
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .message h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        .message p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>صفحة الحب 💖</h1>
+    </header>
+
+    <main>
+        <!-- نموذج إرسال الرسالة -->
+        <h2>أرسل رسالة حب</h2>
+        <form id="loveForm">
+            <input type="text" id="sender" placeholder="اسمك" required><br>
+            <input type="text" id="receiver" placeholder="اسم من تحب" required><br>
+            <select id="type">
+                <option value="رومانسي">رومانسي 💖</option>
+                <option value="دعاء">دعاء 🙏</option>
+                <option value="تهنئة">تهنئة 🎉</option>
+            </select><br>
+            <textarea id="message" placeholder="اكتب رسالتك هنا..." rows="4" required></textarea><br>
+            <button type="submit">أرسل الرسالة</button>
+        </form>
+
+        <!-- عرض الرسائل الأخيرة -->
+        <div class="messages" id="messagesContainer">
+            <h2>الرسائل الأخيرة</h2>
+            <!-- الرسائل ستظهر هنا -->
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('loveForm');
+        const messagesContainer = document.getElementById('messagesContainer');
+
+        let messages = [];
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const sender = document.getElementById('sender').value.trim();
+            const receiver = document.getElementById('receiver').value.trim();
+            const type = document.getElementById('type').value;
+            const messageText = document.getElementById('message').value.trim();
+
+            if(sender && receiver && messageText) {
+                const messageObj = {sender, receiver, type, messageText};
+                messages.unshift(messageObj); // يضيف الرسالة في البداية
+                displayMessages();
+                form.reset();
+            }
+        });
+
+        function displayMessages() {
+            messagesContainer.innerHTML = '<h2>الرسائل الأخيرة</h2>';
+            messages.slice(0, 5).forEach(msg => {
+                const div = document.createElement('div');
+                div.classList.add('message');
+                div.innerHTML = `
+                    <h4>${msg.sender} إلى ${msg.receiver} (${msg.type})</h4>
+                    <p>${msg.messageText}</p>
+                `;
+                messagesContainer.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>

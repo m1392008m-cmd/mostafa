@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توليد رابط رسالة 💌</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ffe6f0, #ffb3c6);
+            margin:0; padding:0; direction: rtl; text-align:center;
+        }
+        header {
+            padding: 30px 10px;
+            background-color: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            border-bottom: 2px solid #fff;
+        }
+        header h1 {
+            margin: 0;
+            color: #ff1a75;
+            font-size: 2.5em;
+        }
+        main {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: rgba(255,255,255,0.3);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        input, textarea, select, button {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            font-size: 1em;
+        }
+        button {
+            background-color: #ff6b81;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #ff4757; }
+        #generatedLink {
+            word-break: break-all;
+            background: rgba(255,255,255,0.5);
+            padding:10px;
+            border-radius:8px;
+            margin-top:15px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>توليد رابط رسالة 💌</h1>
+</header>
+
+<main>
+    <h2>أدخل بيانات الرسالة</h2>
+    <form id="linkForm">
+        <input type="text" id="sender" placeholder="اسمك" required><br>
+        <input type="text" id="receiver" placeholder="اسم المستلم" required><br>
+        <select id="type">
+            <option value="رومانسي">رومانسي 💖</option>
+            <option value="دعاء">دعاء 🙏</option>
+            <option value="تهنئة">تهنئة 🎉</option>
+        </select><br>
+        <textarea id="message" placeholder="اكتب رسالتك هنا..." rows="4" required></textarea><br>
+        <button type="submit">توليد الرابط</button>
+    </form>
+
+    <div id="generatedLink" style="display:none;"></div>
+</main>
+
+<script>
+    const form = document.getElementById('linkForm');
+    const generatedLink = document.getElementById('generatedLink');
+
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const sender = encodeURIComponent(document.getElementById('sender').value.trim());
+        const receiver = encodeURIComponent(document.getElementById('receiver').value.trim());
+        const type = encodeURIComponent(document.getElementById('type').value);
+        const message = encodeURIComponent(document.getElementById('message').value.trim());
+
+        // توليد الرابط
+        const link = `${window.location.origin}/view_message.html?sender=${sender}&receiver=${receiver}&type=${type}&message=${message}`;
+
+        generatedLink.style.display = 'block';
+        generatedLink.innerHTML = `رابط رسالتك:<br><a href="${link}" target="_blank">${link}</a>`;
+    });
+</script>
+
+</body>
+</html>

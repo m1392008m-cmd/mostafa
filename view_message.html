@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رسالتك 💌</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #ffe6f0, #ffb3c6);
+        margin:0; padding:0; direction: rtl; text-align:center;
+    }
+    main {
+        max-width: 600px;
+        margin: 50px auto;
+        background: rgba(255,255,255,0.4);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    h2 { color: #ff1a75; }
+    p { font-size: 1.2em; color:#333; }
+</style>
+</head>
+<body>
+
+<main>
+    <h2 id="messageTitle"></h2>
+    <p id="messageContent"></p>
+</main>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const sender = urlParams.get('sender');
+    const receiver = urlParams.get('receiver');
+    const type = urlParams.get('type');
+    const message = urlParams.get('message');
+
+    if(sender && receiver && message){
+        document.getElementById('messageTitle').textContent = `${sender} إلى ${receiver} (${type})`;
+        document.getElementById('messageContent').textContent = decodeURIComponent(message);
+    } else {
+        document.getElementById('messageTitle').textContent = "رسالة غير صالحة";
+        document.getElementById('messageContent').textContent = "لا توجد بيانات للعرض.";
+    }
+</script>
+
+</body>
+</html>
