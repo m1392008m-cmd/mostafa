@@ -1,41 +1,107 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>رسالة حب 💖</title>
-<style>
-body { font-family: Arial; margin:0; padding:0; direction:rtl; text-align:center;
-       background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); }
-.main-content { max-width:700px; margin:50px auto; background: rgba(255,255,255,0.4);
-               padding:25px; border-radius:20px; box-shadow:0 8px 20px rgba(0,0,0,0.2); }
-h2 { color:#ff1a75; margin-bottom:15px; }
-p { font-size:1.2em; line-height:1.5em; color:#333; }
-button { padding:12px 30px; border-radius:10px; border:none; background:#ff4da6;
-         color:white; font-size:1.1em; cursor:pointer; margin-top:20px; }
-button:hover{background:#ff1a75;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لديك رسالة خاصة 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #ff4d6d, #ff758f);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .envelope {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: openUp 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes openUp {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .type-tag {
+            background: #fff0f3;
+            color: #ff4d6d;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        h2 { color: #800f2f; margin: 10px 0; }
+
+        .message-box {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #590d22;
+            margin: 30px 0;
+            padding: 20px;
+            background: #fffafa;
+            border-radius: 20px;
+            border-right: 5px solid #ff4d6d;
+            white-space: pre-wrap;
+        }
+
+        .sender-info { font-weight: bold; color: #ff4d6d; font-size: 1.1rem; }
+
+        .btn-create {
+            display: block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #ff4d6d;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        #notFound { display: none; color: white; }
+    </style>
 </head>
 <body>
-<main class="main-content">
-<h2>رسالتك وصلت 💌</h2>
-<p id="msgText"></p>
-<button onclick="window.location.href='index.html'">ابعت رسالة لحبابيبك 💖</button>
-</main>
+
+<div class="envelope" id="content">
+    <div class="type-tag" id="t"></div>
+    <h2 id="r"></h2>
+    <div class="message-box" id="m"></div>
+    <div class="sender-info">من حبيبك: <span id="s"></span></div>
+    
+    <a href="index.html" class="btn-create">اصنع رسالة لحبيبك أنت أيضاً 💌</a>
+</div>
+
+<div id="notFound">
+    <h1>😢 للأسف</h1>
+    <p>هذه الرسالة غير موجودة أو انتهى وقتها.</p>
+    <a href="index.html" style="color: white; font-weight: bold;">اضغط هنا لإنشاء رسالة جديدة</a>
+</div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const sender = params.get('sender');
-const receiver = params.get('receiver');
-const type = params.get('type');
-const message = params.get('message');
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const rawData = localStorage.getItem(id);
 
-if(sender && receiver && message){
-    document.getElementById('msgText').innerHTML =
-        `<b>${decodeURIComponent(sender)}</b> إلى <b>${decodeURIComponent(receiver)}</b> (${decodeURIComponent(type)}):<br>${decodeURIComponent(message)}`;
-} else {
-    document.getElementById('msgText').innerHTML = "لا توجد رسالة لعرضها 😢";
-}
+    if (rawData) {
+        const data = JSON.parse(rawData);
+        document.getElementById('t').innerText = data.t;
+        document.getElementById('r').innerText = "إلى: " + data.r;
+        document.getElementById('m').innerText = data.m;
+        document.getElementById('s').innerText = data.s;
+    } else {
+        document.getElementById('content').style.display = 'none';
+        document.getElementById('notFound').style.display = 'block';
+    }
 </script>
 </body>
 </html>
