@@ -32,7 +32,7 @@ const message = params.get('message');
 
 if(sender && receiver && message){
     document.getElementById('msgText').innerHTML =
-        `<b>${sender}</b> إلى <b>${receiver}</b> (${type}):<br>${decodeURIComponent(message)}`;
+        `<b>${decodeURIComponent(sender)}</b> إلى <b>${decodeURIComponent(receiver)}</b> (${decodeURIComponent(type)}):<br>${decodeURIComponent(message)}`;
 } else {
     document.getElementById('msgText').innerHTML = "لا توجد رسالة لعرضها 😢";
 }

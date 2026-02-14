@@ -26,6 +26,7 @@ button:hover { background-color:#ff1a75; transform:scale(1.05); }
 .heart:nth-child(1){left:10%;animation-duration:5s;} .heart:nth-child(2){left:30%;animation-duration:7s;}
 .heart:nth-child(3){left:50%;animation-duration:6s;} .heart:nth-child(4){left:70%;animation-duration:8s;}
 .heart:nth-child(5){left:90%;animation-duration:9s;}
+#generatedLink { background: rgba(255,255,255,0.5); padding:10px; border-radius:8px; margin-top:15px; display:none; word-break:break-all; }
 </style>
 </head>
 <body>
@@ -46,12 +47,16 @@ button:hover { background-color:#ff1a75; transform:scale(1.05); }
 <option value="تهنئة">تهنئة 🎉</option>
 </select><br>
 <textarea id="message" placeholder="اكتب رسالتك هنا..." rows="4" required></textarea><br>
-<button type="submit">أرسل الرسالة 💌</button>
+<button type="submit">توليد الرابط 💌</button>
 </form>
+
+<div id="generatedLink"></div>
 </main>
 
 <script>
 const form = document.getElementById('loveForm');
+const generatedLink = document.getElementById('generatedLink');
+
 form.addEventListener('submit', function(e){
     e.preventDefault();
     const sender = encodeURIComponent(document.getElementById('sender').value.trim());
@@ -59,10 +64,22 @@ form.addEventListener('submit', function(e){
     const type = encodeURIComponent(document.getElementById('type').value);
     const message = encodeURIComponent(document.getElementById('message').value.trim());
 
-    // توليد الرابط لصفحة الرسالة
     const link = `message.html?sender=${sender}&receiver=${receiver}&type=${type}&message=${message}`;
-    window.location.href = link; // يروح مباشرة لصفحة الرسالة
+
+    generatedLink.style.display = 'block';
+    generatedLink.innerHTML = `رابط رسالتك:<br><input type="text" value="${window.location.origin + '/love-page/' + link}" id="copyLink" readonly style="width:80%;padding:5px;border-radius:5px;border:1px solid #ccc;">
+    <button onclick="copyLink()">نسخ الرابط</button>`;
+
+    form.reset();
 });
+
+function copyLink(){
+    const copyText = document.getElementById('copyLink');
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    alert("تم نسخ الرابط! ✨");
+}
 </script>
 </body>
 </html>
