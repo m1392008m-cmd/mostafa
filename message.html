@@ -6,10 +6,14 @@
     <title>المفاجأة المنتظرة</title>
     <style>
         body { margin: 0; background: #000; overflow: hidden; font-family: 'Tahoma'; }
-        canvas { display: block; }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+        #fireworks-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5; pointer-events: none;
+        }
         #overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; color: white; z-index: 10; width: 100%;
+            text-align: center; color: white; z-index: 10; width: 90%;
         }
         .btn-magic {
             padding: 20px 40px; background: none; border: 2px solid #ff4d6d;
@@ -18,69 +22,65 @@
         }
         .btn-magic:hover { background: #ff4d6d; color: white; }
         #finalContent { display: none; opacity: 0; transition: 2s; }
-        .love-text { font-size: 28px; font-weight: bold; text-shadow: 0 0 15px #ff4d6d; line-height: 1.6; }
-        .counter { font-size: 16px; margin-top: 20px; color: #ffc1d1; }
+        .love-text { font-size: 26px; font-weight: bold; text-shadow: 0 0 15px #ff4d6d; line-height: 1.6; }
+        .personal-msg { font-size: 18px; color: #ffc1d1; margin-top: 15px; font-style: italic; white-space: pre-wrap; }
+        .counter { font-size: 16px; margin-top: 20px; color: #ffc1d1; opacity: 0.8; }
     </style>
 </head>
 <body>
 
-    <canvas id="canvas"></canvas>
-
+    <canvas id="particlesCanvas"></canvas> 
+    <div id="fireworks-container"></div> 
     <div id="overlay">
         <div id="startZone">
             <button class="btn-magic" onclick="ignite()">المس لترى المعجزة 🎆</button>
         </div>
         <div id="finalContent">
             <div class="love-text" id="msgBox"></div>
+            <div class="personal-msg" id="personalBox"></div>
             <div class="counter" id="timerBox"></div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
+
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        const particlesCanvas = document.getElementById('particlesCanvas');
+        const pCtx = particlesCanvas.getContext('2d');
         let particles = [];
         let mouse = { x: -100, y: -100 };
         let isHeartMode = false;
 
-        // فك البيانات
-        const q = new URLSearchParams(location.search);
-        let data = JSON.parse(decodeURIComponent(escape(atob(q.get('v')))));
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        particlesCanvas.width = window.innerWidth;
+        particlesCanvas.height = window.innerHeight;
 
         class Particle {
             constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.baseX = this.x;
-                this.baseY = this.y;
+                this.x = Math.random() * particlesCanvas.width;
+                this.y = Math.random() * particlesCanvas.height;
                 this.size = Math.random() * 2 + 1;
                 this.color = `hsl(${Math.random() * 50 + 340}, 100%, 70%)`;
                 this.vx = Math.random() * 2 - 1;
                 this.vy = Math.random() * 2 - 1;
             }
             draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+                pCtx.fillStyle = this.color;
+                pCtx.beginPath();
+                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                pCtx.fill();
             }
             update() {
                 if (isHeartMode) {
-                    // معادلة القلب الرياضية
                     let t = Math.random() * Math.PI * 2;
-                    let targetX = canvas.width/2 + 160 * Math.pow(Math.sin(t), 3);
-                    let targetY = canvas.height/2 - (130 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t));
+                    let targetX = particlesCanvas.width/2 + 160 * Math.pow(Math.sin(t), 3);
+                    let targetY = particlesCanvas.height/2 - (130 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t));
                     this.x += (targetX - this.x) * 0.05;
                     this.y += (targetY - this.y) * 0.05;
                 } else {
                     this.x += this.vx;
                     this.y += this.vy;
-                    if(this.x > canvas.width || this.x < 0) this.vx *= -1;
-                    if(this.y > canvas.height || this.y < 0) this.vy *= -1;
-                    
+                    if(this.x > particlesCanvas.width || this.x < 0) this.vx *= -1;
+                    if(this.y > particlesCanvas.height || this.y < 0) this.vy *= -1;
                     let dx = mouse.x - this.x;
                     let dy = mouse.y - this.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
@@ -92,23 +92,37 @@
             }
         }
 
-        function init() {
+        function initParticles() {
             for(let i=0; i<800; i++) particles.push(new Particle());
         }
 
-        function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function animateParticles() {
+            pCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            pCtx.fillRect(0, 0, particlesCanvas.width, particlesCanvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
+            requestAnimationFrame(animateParticles);
         }
 
         window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
-        init(); animate();
+        initParticles(); animateParticles();
 
-        function ignite() {
+        const container = document.getElementById('fireworks-container');
+        const fireworks = new Fireworks.default(container, {
+            autoresize: true, opacity: 0.8, acceleration: 1.05, friction: 0.97, gravity: 1.5,
+            particles: 50, traceSpeed: 5, explosion: 5,
+            boundaries: { x: 50, y: 50, width: container.width, height: container.height }
+        });
+
+        const q = new URLSearchParams(location.search);
+        let data = JSON.parse(decodeURIComponent(escape(atob(q.get('v')))));
+
+        async function ignite() {
             document.getElementById('startZone').style.display = 'none';
+            fireworks.start();
+            await new Promise(r => setTimeout(r, 2000));
+            fireworks.stop();
             isHeartMode = true;
+
             setTimeout(() => {
                 const final = document.getElementById('finalContent');
                 final.style.display = 'block';
@@ -118,20 +132,31 @@
             }, 2000);
         }
 
-        function typeMsg() {
-            const txt = `إلى ${data.t}..\n${data.y}\nأنتِ العالم بالنسبة لي.\nمن: ${data.f} ❤️`;
+        async function typeMsg() {
+            const headerText = `إلى ${data.t}..\n${data.y}`;
+            const personalText = data.m ? `\n\n"${data.m}"` : "";
+            const footerText = `\n\nمن: ${data.f} ❤️`;
+            
+            const fullText = headerText + personalText + footerText;
             let i = 0;
+            const target = document.getElementById('msgBox');
+            
             const timer = setInterval(() => {
-                document.getElementById('msgBox').innerHTML += txt[i] === '\n' ? '<br>' : txt[i];
-                i++; if(i >= txt.length) clearInterval(timer);
-            }, 100);
+                target.innerHTML += fullText[i] === '\n' ? '<br>' : fullText[i];
+                i++;
+                if(i >= fullText.length) {
+                    clearInterval(timer);
+                    fireworks.start();
+                    setTimeout(() => fireworks.stop(), 5000);
+                }
+            }, 70; // سرعة الكتابة
         }
 
         function countTime() {
-            const start = new Date(data.d).getTime();
+            const startDate = new Date(data.d).getTime();
             setInterval(() => {
                 const now = new Date().getTime();
-                const diff = now - start;
+                const diff = now - startDate;
                 const d = Math.floor(diff / (1000 * 60 * 60 * 24));
                 const s = Math.floor((diff / 1000) % 60);
                 document.getElementById('timerBox').innerText = `نبض حبنا مستمر منذ ${d} يوم و ${s} ثانية...`;
