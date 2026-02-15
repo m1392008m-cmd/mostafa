@@ -1,107 +1,95 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صانع مفاجآت الحب 💖</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root { --primary: #ff4d6d; --secondary: #ff758f; --bg: #fff0f3; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
-        .container { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); padding: 25px; border-radius: 30px; box-shadow: 0 20px 50px rgba(255, 77, 109, 0.2); width: 90%; max-width: 450px; text-align: center; border: 1px solid #fff; z-index: 10; }
-        h1 { color: var(--primary); font-size: 1.6rem; margin-bottom: 5px; }
-        p { font-size: 0.9rem; color: #666; margin-bottom: 20px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ffccd5; border-radius: 15px; font-family: 'Cairo'; outline: none; box-sizing: border-box; }
-        label { display: block; text-align: right; font-size: 13px; color: var(--primary); font-weight: bold; margin-top: 10px; }
-        button { background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 15px; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; margin-top: 15px; }
-        button:hover { transform: scale(1.03); }
-        #resultArea { margin-top: 20px; display: none; background: white; padding: 15px; border-radius: 15px; border: 2px dashed var(--primary); }
-        .bg-element { position: fixed; z-index: -1; animation: float linear infinite; opacity: 0.6; }
-        @keyframes float { from { transform: translateY(100vh) rotate(0deg); } to { transform: translateY(-10vh) rotate(360deg); } }
-    </style>
+<meta charset="UTF-8">
+<title>اصنع المفاجأة</title>
+
+<style>
+body{
+ margin:0;
+ font-family:tahoma;
+ text-align:center;
+ background:linear-gradient(45deg,#ffb6d9,#ff4fa3);
+ overflow:hidden;
+}
+.wrap{position:relative;z-index:5;padding:20px}
+h2{color:white;text-shadow:0 0 10px red}
+
+input,select,button{
+ display:block;
+ margin:10px auto;
+ padding:12px;
+ width:85%;
+ max-width:330px;
+ border-radius:25px;
+ border:none;
+}
+
+button{
+ background:#800040;
+ color:white;
+ font-weight:bold;
+ box-shadow:0 0 10px red;
+}
+
+.heart{
+ position:absolute;
+ font-size:22px;
+ animation:up 6s linear infinite;
+}
+@keyframes up{
+ from{transform:translateY(100vh)}
+ to{transform:translateY(-10vh)}
+}
+</style>
 </head>
+
 <body>
 
-<div id="elements-container"></div>
+<div class="wrap">
+<h2>💘 اصنع رسالة حب نار 💘</h2>
 
-<div class="container">
-    <h1>🥰😍 بحبك 🥰😍</h1>
-    <p>اصنع مفاجأة خاصة لحبيبك بصوتك وصورتك</p>
-    
-    <input type="text" id="sender" placeholder="اسمك (المرسل)">
-    <input type="text" id="receiver" placeholder="اسم حبيبك (المستقبل)">
-    
-    <label>📸 ارفع صورة (اختياري):</label>
-    <input type="file" id="photo" accept="image/*">
+<input id="from" placeholder="اسمك">
+<input id="to" placeholder="اسم الحبيب">
+<select id="type">
+<option>حب</option>
+<option>عشق</option>
+<option>غرام</option>
+<option>تهنئة</option>
+<option>رسالة وخلاص</option>
+</select>
 
-    <label>🎵 ارفع أغنية MP3 (اختياري - يفضل ملف صغير):</label>
-    <input type="file" id="audio" accept="audio/*">
+<input id="img" placeholder="رابط صورة">
+<input id="music" placeholder="رابط موسيقى">
+<input id="date" placeholder="2024-01-01">
+<input id="pass" placeholder="كلمة السر">
 
-    <select id="type">
-        <option value="🥰 بحبك 🥰">🥰😍 بحبك 🥰😍</option>
-        <option value="😘 بعشقك 😘">😘😘 بعشقك 😘😘</option>
-        <option value="💋 وحشتني 💋">💋💋 وحشتني 💋💋</option>
-    </select>
-    
-    <textarea id="message" rows="3" placeholder="اكتب رسالتك الرومانسية..."></textarea>
-    
-    <button onclick="generateLink()">إنشاء الرابط السحري ✨</button>
-
-    <div id="resultArea">
-        <p>انسخ الرابط وابعت المفاجأة:</p>
-        <input type="text" id="generatedLink" readonly style="font-size: 12px;">
-        <button onclick="copyLink()" style="background: #4CAF50;">نسخ الرابط 📋</button>
-    </div>
+<button onclick="make()">توليد الرابط</button>
+<input id="out" readonly>
+<button onclick="copy()">نسخ</button>
 </div>
 
 <script>
-    async function generateLink() {
-        const s = document.getElementById('sender').value;
-        const r = document.getElementById('receiver').value;
-        const m = document.getElementById('message').value;
-        const t = document.getElementById('type').value;
-        const photoFile = document.getElementById('photo').files[0];
-        const audioFile = document.getElementById('audio').files[0];
+function make(){
+ let url=`message.html?from=${encodeURIComponent(from.value)}&to=${encodeURIComponent(to.value)}&type=${encodeURIComponent(type.value)}&img=${encodeURIComponent(img.value)}&music=${encodeURIComponent(music.value)}&date=${encodeURIComponent(date.value)}&pass=${encodeURIComponent(pass.value)}`;
+ out.value=url;
+}
+function copy(){
+ out.select();
+ document.execCommand("copy");
+ alert("تم النسخ 💋");
+}
 
-        if(!s || !r || !m) { alert("من فضلك اكمل البيانات الأساسية ❤️"); return; }
-
-        let pBase64 = "", aBase64 = "";
-        if (photoFile) pBase64 = await toBase64(photoFile);
-        if (audioFile) aBase64 = await toBase64(audioFile);
-
-        const msgData = { s, r, m, t, p: pBase64, a: aBase64 };
-        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(msgData))));
-        
-        const baseUrl = window.location.origin + window.location.pathname.replace('index.html', '');
-        document.getElementById('generatedLink').value = `${baseUrl}message.html?msg=${encoded}`;
-        document.getElementById('resultArea').style.display = 'block';
-    }
-
-    const toBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    });
-
-    function copyLink() {
-        const input = document.getElementById("generatedLink");
-        input.select();
-        document.execCommand("copy");
-        alert("تم نسخ الرابط! أرسله لمن تحب 💋");
-    }
-
-    const ems = ['❤️','💋','🥰','😍'];
-    setInterval(() => {
-        const el = document.createElement('div');
-        el.className = 'bg-element';
-        el.innerHTML = ems[Math.floor(Math.random()*ems.length)];
-        el.style.left = Math.random()*100+'vw';
-        el.style.fontSize = Math.random()*20+20+'px';
-        el.style.animationDuration = Math.random()*3+3+'s';
-        document.getElementById('elements-container').appendChild(el);
-        setTimeout(() => el.remove(), 5000);
-    }, 500);
+let e=["💋","❤️","💘","💖","💝","💕","😍","🥰"];
+setInterval(()=>{
+ let h=document.createElement("div");
+ h.className="heart";
+ h.style.left=Math.random()*100+"vw";
+ h.innerText=e[Math.floor(Math.random()*e.length)];
+ document.body.appendChild(h);
+ setTimeout(()=>h.remove(),6000);
+},250);
 </script>
+
 </body>
 </html>
