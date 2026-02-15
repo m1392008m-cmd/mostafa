@@ -1,189 +1,141 @@
-
 <!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
 <title>المفاجأة الكبرى</title>
-
 <style>
-body{
- margin:0;
- font-family:tahoma;
- text-align:center;
- color:white;
- background:radial-gradient(circle,#ff4fa3,#800040,#400020);
- overflow:hidden;
-}
+body{ margin:0; font-family:tahoma; text-align:center; color:white; background:radial-gradient(circle,#ff4fa3,#800040,#400020); overflow:hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
+button{ padding:12px 20px; border:none; border-radius:25px; background:white; color:#800040; font-weight:bold; cursor:pointer; }
+#main,#ready,#passBox{ padding:20px; z-index: 10; position: relative; }
+#main { display:none; } #ready { display:none; }
+#msg{ font-size:22px; margin:20px; min-height:70px; line-height: 1.6; }
+.water{ position:fixed; bottom:10px; right:10px; opacity:.3; font-size:14px; }
+.heart{ position:absolute; font-size:20px; animation:up 6s linear infinite; pointer-events: none; }
+@keyframes up{ from{transform:translateY(100vh)} to{transform:translateY(-10vh)} }
+.word{ position:fixed; font-size:18px; animation:fade 4s linear infinite; pointer-events: none; }
+@keyframes fade{ 0%{opacity:0;transform:translateY(20px)} 50%{opacity:1} 100%{opacity:0;transform:translateY(-20px)} }
+.star{ position:fixed; width:3px;height:3px; background:white; animation:blink 2s infinite alternate; }
+@keyframes blink{ from{opacity:.2} to{opacity:1} }
+img{ max-width:220px; border-radius:15px; box-shadow:0 0 20px white; animation:pop 1s ease; margin-top: 10px; }
+@keyframes pop{ from{transform:scale(0)} to{transform:scale(1)} }
 
-button{
- padding:12px 20px;
- border:none;
- border-radius:25px;
- background:white;
- color:#800040;
- font-weight:bold;
-}
-
-#main,#ready{display:none;padding:20px}
-
-#msg{
- font-size:22px;
- margin:20px;
- min-height:70px;
-}
-
-.water{
- position:fixed;
- bottom:10px;
- right:10px;
- opacity:.3;
- font-size:14px;
-}
-
-/* قلوب */
-.heart{
- position:absolute;
- font-size:20px;
- animation:up 6s linear infinite;
-}
-@keyframes up{
- from{transform:translateY(100vh)}
- to{transform:translateY(-10vh)}
-}
-
-/* كلمات الحب */
-.word{
- position:fixed;
- font-size:18px;
- animation:fade 4s linear infinite;
-}
-@keyframes fade{
- 0%{opacity:0;transform:translateY(20px)}
- 50%{opacity:1}
- 100%{opacity:0;transform:translateY(-20px)}
-}
-
-/* نجوم */
-.star{
- position:fixed;
- width:3px;height:3px;
- background:white;
- animation:blink 2s infinite alternate;
-}
-@keyframes blink{
- from{opacity:.2}
- to{opacity:1}
-}
-
-/* الصورة */
-img{
- max-width:220px;
- border-radius:15px;
- box-shadow:0 0 20px white;
- animation:pop 1s ease;
-}
-@keyframes pop{
- from{transform:scale(0)}
- to{transform:scale(1)}
-}
+/* شكل القلب الكبير حول كلمة السر */
+.big-heart-container { font-size: 200px; color: #ff4d6d; position: relative; }
+.inner-form { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; color: white; width: 100%; }
+.inner-form input { padding: 8px; border-radius: 10px; border: none; width: 120px; text-align: center; }
 </style>
 </head>
-
 <body>
 
 <div id="passBox">
-<h2>💖 ادخل كلمة السر يا جميل 💖</h2>
-<input id="p">
-<button onclick="check()">دخول</button>
+    <div class="big-heart-container">
+        ❤️
+        <div class="inner-form">
+            <p style="font-size: 18px; font-weight: bold; margin: 5px;">كلمة السر يا جميل</p>
+            <input type="password" id="p"><br><br>
+            <button onclick="check()">دخول</button>
+        </div>
+    </div>
 </div>
 
 <div id="ready">
-<h2>جاهز للمراجعة الكبرى؟ 😍</h2>
-<button onclick="openLove()">افتح</button>
+    <h2>جاهز للمراجعة الكبرى؟ 😍</h2>
+    <button onclick="openLove()">افتح الآن ✨</button>
 </div>
 
 <div id="main">
-<h2 id="title"></h2>
-<div id="days"></div>
-<div id="msg"></div>
-<img id="photo"><br><br>
-<audio id="audio" controls autoplay></audio>
+    <h2 id="title"></h2>
+    <div id="days" style="font-size: 20px; color: #ffeb3b;"></div>
+    <div id="msg"></div>
+    <img id="photo" style="display:none;"><br><br>
+    <audio id="audio" autoplay></audio>
 </div>
 
 <div class="water" id="water"></div>
 
 <script>
-let q=new URLSearchParams(location.search);
-let real=q.get("pass");
+let q = new URLSearchParams(location.search);
+let realPass = q.get("pass");
 
 function check(){
- if(p.value==real){
-  passBox.style.display="none";
-  ready.style.display="block";
- }else alert("غلط 😢");
+    let inputP = document.getElementById('p').value;
+    if(inputP == realPass){
+        document.getElementById('passBox').style.display = "none";
+        document.getElementById('ready').style.display = "block";
+    } else {
+        alert("كلمة السر غلط يا سكر 😢");
+    }
 }
 
 function openLove(){
- ready.style.display="none";
- main.style.display="block";
+    document.getElementById('ready').style.display = "none";
+    document.getElementById('main').style.display = "block";
 
- let from=q.get("from");
- let to=q.get("to");
- let type=q.get("type");
- let date=q.get("date");
+    let from = q.get("from") || "مجهول";
+    let to = q.get("to") || "حبيبي";
+    let type = q.get("type") || "حب";
+    let date = q.get("date");
+    let music = q.get("music");
+    let img = q.get("img");
 
- water.innerText="From "+from;
+    document.getElementById('water').innerText = "From " + from;
 
- if(date){
-  let d1=new Date(date);
-  let d2=new Date();
-  let diff=Math.floor((d2-d1)/(1000*60*60*24));
-  days.innerHTML="مع بعض بقالكم "+diff+" يوم ❤️";
- }
+    if(date){
+        let d1 = new Date(date);
+        let d2 = new Date();
+        let diff = Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
+        document.getElementById('days').innerHTML = "بقالنا مع بعض " + diff + " يوم ❤️";
+    }
 
- let text=`من ${from} إلى ${to} ❤️ ${type}`;
- let i=0;
- let inter=setInterval(()=>{
-  msg.innerHTML+=text[i];
-  i++;
-  if(i>=text.length) clearInterval(inter);
- },80);
+    let text = `إلى ${to}.. \n ${type} \n من حبيبي ${from} ❤️`;
+    let i = 0;
+    let target = document.getElementById('msg');
+    let inter = setInterval(() => {
+        target.innerHTML += text[i] === '\n' ? '<br>' : text[i];
+        i++;
+        if(i >= text.length) clearInterval(inter);
+    }, 80);
 
- if(q.get("img")) photo.src=q.get("img");
- if(q.get("music")) audio.src=q.get("music");
+    if(img) {
+        let p = document.getElementById('photo');
+        p.src = img;
+        p.style.display = "inline-block";
+    }
+    if(music) {
+        let a = document.getElementById('audio');
+        a.src = music;
+        a.play().catch(() => console.log("Auto-play blocked"));
+    }
 }
 
-/* قلوب */
-let arr=["😍","🥰","❤️","😘","💘","💝","💖","💗","💓","💞","💕"];
-setInterval(()=>{
- let h=document.createElement("div");
- h.className="heart";
- h.style.left=Math.random()*100+"vw";
- h.innerText=arr[Math.floor(Math.random()*arr.length)];
- document.body.appendChild(h);
- setTimeout(()=>h.remove(),6000);
-},250);
+// تأثير القلوب والكلمات المتطايرة
+let arr = ["😍","🥰","❤️","😘","💘","💝","💖","💗","💓","💞","💕","💋"];
+setInterval(() => {
+    let h = document.createElement("div");
+    h.className = "heart";
+    h.style.left = Math.random() * 100 + "vw";
+    h.innerText = arr[Math.floor(Math.random() * arr.length)];
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 6000);
+}, 300);
 
-/* كلمات */
-setInterval(()=>{
- let w=document.createElement("div");
- w.className="word";
- w.style.left=Math.random()*100+"vw";
- w.style.top=Math.random()*100+"vh";
- w.innerText=Math.random()>0.5?"🥰 بعشقك 🥰":"😍 بحبك 😍";
- document.body.appendChild(w);
- setTimeout(()=>w.remove(),4000);
-},600);
+setInterval(() => {
+    let w = document.createElement("div");
+    w.className = "word";
+    w.style.left = Math.random() * 100 + "vw";
+    w.style.top = Math.random() * 100 + "vh";
+    w.innerText = Math.random() > 0.5 ? "🥰 بعشقك 🥰" : "😍 بحبك 😍";
+    document.body.appendChild(w);
+    setTimeout(() => w.remove(), 4000);
+}, 700);
 
-/* نجوم */
-for(let i=0;i<40;i++){
- let s=document.createElement("div");
- s.className="star";
- s.style.left=Math.random()*100+"vw";
- s.style.top=Math.random()*100+"vh";
- document.body.appendChild(s);
+for(let i=0; i<40; i++){
+    let s = document.createElement("div");
+    s.className = "star";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.top = Math.random() * 100 + "vh";
+    document.body.appendChild(s);
 }
 </script>
-
 </body>
 </html>
