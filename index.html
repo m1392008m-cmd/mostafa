@@ -93,15 +93,26 @@
         setInterval(createHeart, 300);
 
         function generateLink() {
-            const data = {
-                s: document.getElementById('sender').value,
-                r: document.getElementById('receiver').value,
-                t: document.getElementById('type').value,
-                p: document.getElementById('pass').value,
-                img: document.getElementById('photo').value,
-                m: document.getElementById('music').value,
-                d: document.getElementById('specialDate').value
-            };
+    const baseUrl = window.location.href.split('index.html')[0] + 'message.html';
+    
+    // تجميع البيانات في كائن واحد
+    const data = {
+        from: document.getElementById('from').value,
+        to: document.getElementById('to').value,
+        type: document.getElementById('type').value,
+        img: document.getElementById('img').value,
+        music: document.getElementById('music').value,
+        date: document.getElementById('date').value,
+        pass: document.getElementById('pass').value
+    };
+
+    // تحويل البيانات لنص مشفر عشان مفيش حاجة تضيع في الطريق
+    const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    
+    document.getElementById('finalLink').value = baseUrl + '?data=' + encodedData;
+    document.getElementById('result').style.display = 'block';
+}
+
             // تحويل البيانات لـ Base64 عشان الرابط يبقى شكله احترافي
             const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
             const url = window.location.href.replace('index.html', '') + 'message.html?msg=' + encodedData;
