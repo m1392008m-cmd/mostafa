@@ -1,115 +1,142 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>المفاجأة الكبرى</title>
-<style>
-body{ margin:0; font-family:tahoma; text-align:center; color:white; background:radial-gradient(circle,#ff4fa3,#800040,#400020); overflow:hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
-button{ padding:12px 20px; border:none; border-radius:25px; background:white; color:#800040; font-weight:bold; cursor:pointer; }
-#main,#ready,#passBox{ padding:20px; z-index: 10; position: relative; }
-#main { display:none; } #ready { display:none; }
-#msg{ font-size:22px; margin:20px; min-height:70px; line-height: 1.6; }
-.water{ position:fixed; bottom:10px; right:10px; opacity:.3; font-size:14px; }
-.heart{ position:absolute; font-size:20px; animation:up 6s linear infinite; pointer-events: none; }
-@keyframes up{ from{transform:translateY(100vh)} to{transform:translateY(-10vh)} }
-.word{ position:fixed; font-size:18px; animation:fade 4s linear infinite; pointer-events: none; }
-@keyframes fade{ 0%{opacity:0;transform:translateY(20px)} 50%{opacity:1} 100%{opacity:0;transform:translateY(-20px)} }
-.star{ position:fixed; width:3px;height:3px; background:white; animation:blink 2s infinite alternate; }
-@keyframes blink{ from{opacity:.2} to{opacity:1} }
-img{ max-width:220px; border-radius:15px; box-shadow:0 0 20px white; animation:pop 1s ease; margin-top: 10px; }
-@keyframes pop{ from{transform:scale(0)} to{transform:scale(1)} }
-
-/* شكل القلب الكبير حول كلمة السر */
-.big-heart-container { font-size: 200px; color: #ff4d6d; position: relative; }
-.inner-form { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); font-size: 16px; color: white; width: 100%; }
-.inner-form input { padding: 8px; border-radius: 10px; border: none; width: 120px; text-align: center; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المفاجأة المنتظرة</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Tahoma'; }
+        canvas { display: block; }
+        #overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; color: white; z-index: 10; width: 100%;
+        }
+        .btn-magic {
+            padding: 20px 40px; background: none; border: 2px solid #ff4d6d;
+            color: #ff4d6d; font-size: 20px; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 0 20px #ff4d6d; transition: 0.5s;
+        }
+        .btn-magic:hover { background: #ff4d6d; color: white; }
+        #finalContent { display: none; opacity: 0; transition: 2s; }
+        .love-text { font-size: 28px; font-weight: bold; text-shadow: 0 0 15px #ff4d6d; line-height: 1.6; }
+        .counter { font-size: 16px; margin-top: 20px; color: #ffc1d1; }
+    </style>
 </head>
 <body>
 
-<div id="passBox">
-    <div class="big-heart-container">
-        ❤️
-        <div class="inner-form">
-            <p style="font-size: 18px; font-weight: bold; margin: 5px;">كلمة السر يا جميل</p>
-            <input type="password" id="p"><br><br>
-            <button onclick="check()">دخول</button>
+    <canvas id="canvas"></canvas>
+
+    <div id="overlay">
+        <div id="startZone">
+            <button class="btn-magic" onclick="ignite()">المس لترى المعجزة 🎆</button>
+        </div>
+        <div id="finalContent">
+            <div class="love-text" id="msgBox"></div>
+            <div class="counter" id="timerBox"></div>
         </div>
     </div>
-</div>
 
-<div id="ready">
-    <h2>جاهز للمراجعة الكبرى؟ 😍</h2>
-    <button onclick="openLove()">افتح الآن ✨</button>
-</div>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouse = { x: -100, y: -100 };
+        let isHeartMode = false;
 
-<div id="main">
-    <h2 id="title"></h2>
-    <div id="days" style="font-size: 20px; color: #ffeb3b;"></div>
-    <div id="msg"></div>
-    <img id="photo" style="display:none;"><br><br>
-    <audio id="audio" autoplay></audio>
-</div>
+        // فك البيانات
+        const q = new URLSearchParams(location.search);
+        let data = JSON.parse(decodeURIComponent(escape(atob(q.get('v')))));
 
-<div class="water" id="water"></div>
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-<script>
-// فك تشفير البيانات من الرابط
-let q = new URLSearchParams(location.search);
-let encodedData = q.get("data");
-let data = {};
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.baseX = this.x;
+                this.baseY = this.y;
+                this.size = Math.random() * 2 + 1;
+                this.color = `hsl(${Math.random() * 50 + 340}, 100%, 70%)`;
+                this.vx = Math.random() * 2 - 1;
+                this.vy = Math.random() * 2 - 1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            update() {
+                if (isHeartMode) {
+                    // معادلة القلب الرياضية
+                    let t = Math.random() * Math.PI * 2;
+                    let targetX = canvas.width/2 + 160 * Math.pow(Math.sin(t), 3);
+                    let targetY = canvas.height/2 - (130 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t));
+                    this.x += (targetX - this.x) * 0.05;
+                    this.y += (targetY - this.y) * 0.05;
+                } else {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if(this.x > canvas.width || this.x < 0) this.vx *= -1;
+                    if(this.y > canvas.height || this.y < 0) this.vy *= -1;
+                    
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if(dist < 100) {
+                        this.x -= dx/10;
+                        this.y -= dy/10;
+                    }
+                }
+            }
+        }
 
-if (encodedData) {
-    data = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
-}
+        function init() {
+            for(let i=0; i<800; i++) particles.push(new Particle());
+        }
 
-function check() {
-    let inputP = document.getElementById('p').value;
-    // المقارنة الآن تتم مع البيانات المفكوكة
-    if (inputP === data.pass) {
-        document.getElementById('passBox').style.display = "none";
-        document.getElementById('ready').style.display = "block";
-    } else {
-        alert("كلمة السر غلط يا سكر 😢");
-    }
-}
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
 
-function openLove() {
-    document.getElementById('ready').style.display = "none";
-    document.getElementById('main').style.display = "block";
+        window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+        init(); animate();
 
-    document.getElementById('water').innerText = "From " + (data.from || "مجهول");
+        function ignite() {
+            document.getElementById('startZone').style.display = 'none';
+            isHeartMode = true;
+            setTimeout(() => {
+                const final = document.getElementById('finalContent');
+                final.style.display = 'block';
+                setTimeout(() => final.style.opacity = '1', 100);
+                typeMsg();
+                if(data.d) countTime();
+            }, 2000);
+        }
 
-    if (data.date) {
-        let d1 = new Date(data.date);
-        let d2 = new Date();
-        let diff = Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
-        document.getElementById('days').innerHTML = "بقالنا مع بعض " + diff + " يوم ❤️";
-    }
+        function typeMsg() {
+            const txt = `إلى ${data.t}..\n${data.y}\nأنتِ العالم بالنسبة لي.\nمن: ${data.f} ❤️`;
+            let i = 0;
+            const timer = setInterval(() => {
+                document.getElementById('msgBox').innerHTML += txt[i] === '\n' ? '<br>' : txt[i];
+                i++; if(i >= txt.length) clearInterval(timer);
+            }, 100);
+        }
 
-    let text = `إلى ${data.to || 'حبيبي'}.. \n ${data.type || 'رسالة حب'} \n من ${data.from || 'حبيبك'} ❤️`;
-    let i = 0;
-    let target = document.getElementById('msg');
-    let inter = setInterval(() => {
-        target.innerHTML += text[i] === '\n' ? '<br>' : text[i];
-        i++;
-        if (i >= text.length) clearInterval(inter);
-    }, 80);
-
-    if (data.img) {
-        let p = document.getElementById('photo');
-        p.src = data.img;
-        p.style.display = "inline-block";
-    }
-    if (data.music) {
-        let a = document.getElementById('audio');
-        a.src = data.music;
-        a.play().catch(() => console.log("Auto-play blocked"));
-    }
-}
-
-// (أضف هنا أكواد القلوب والنجوم التي كانت في الكود السابق)
-</script>
-
+        function countTime() {
+            const start = new Date(data.d).getTime();
+            setInterval(() => {
+                const now = new Date().getTime();
+                const diff = now - start;
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const s = Math.floor((diff / 1000) % 60);
+                document.getElementById('timerBox').innerText = `نبض حبنا مستمر منذ ${d} يوم و ${s} ثانية...`;
+            }, 1000);
+        }
+    </script>
 </body>
 </html>
