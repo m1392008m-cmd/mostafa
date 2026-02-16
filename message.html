@@ -3,69 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مفاجأة ملكية لك 👑</title>
+    <title>مفاجأتك وصلت 🎁</title>
     <style>
-        :root {
-            --blue-light: #e0f2fe;
-            --blue-royal: #0077b6;
-            --pink-soft: #ffb7c5;
-            --kashmir: #ac7373;
-        }
-
         body {
             margin: 0; padding: 0; overflow-x: hidden;
-            /* تدرج الألوان: أزرق، أبيض، بمبي، كشمير */
             background: linear-gradient(-45deg, #0077b6, #ffffff, #ffb7c5, #ac7373);
             background-size: 400% 400%; animation: bg 15s infinite;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; color: #333;
+            font-family: 'Segoe UI', sans-serif; text-align: center;
         }
         @keyframes bg { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-
-        /* شاشة القلب: أبيض في أزرق */
+        
         #startScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #ffffff, #e0f2fe);
-            z-index: 1000;
+            background: linear-gradient(135deg, #ffffff, #e0f2fe); z-index: 1000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        .big-heart {
-            font-size: 150px; cursor: pointer; animation: pulse 1.5s infinite;
-            filter: drop-shadow(0 0 20px #0077b6);
-        }
+        .big-heart { font-size: 120px; cursor: pointer; animation: pulse 1.5s infinite; filter: drop-shadow(0 0 20px #0077b6); }
         @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
-        
-        .names-on-heart { 
-            position: absolute; font-size: 22px; font-weight: bold; 
-            pointer-events: none; color: #0077b6; text-shadow: 1px 1px 2px rgba(255,255,255,0.8); 
-        }
+        .names-on-heart { position: absolute; font-size: 18px; font-weight: bold; color: #0077b6; }
 
-        #startScreen p { color: #0077b6; font-weight: bold; margin-top: 20px; }
-
-        .particle { position: fixed; bottom: -50px; z-index: 5; animation: fly 6s linear infinite; pointer-events: none; }
+        .content { display: none; padding: 20px; max-width: 500px; margin: auto; position: relative; z-index: 10; }
+        #userImage { width: 100%; border-radius: 20px; display: none; margin: 15px 0; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        #typewriter { font-size: 22px; font-weight: bold; color: #333; background: rgba(255,255,255,0.6); padding: 15px; border-radius: 15px; margin: 15px 0; }
+        iframe, video { width: 100%; border-radius: 15px; margin-top: 10px; }
+        .particle { position: fixed; bottom: -50px; animation: fly 6s linear infinite; pointer-events: none; }
         @keyframes fly { to { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
-
-        .content { display: none; padding: 20px; z-index: 10; position: relative; max-width: 600px; margin: auto; }
-        
-        #userImage { 
-            width: 100%; max-width: 300px; border-radius: 20px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin: 20px auto; 
-            display: none; border: 4px solid white;
-        }
-
-        #typewriter { 
-            font-size: 24px; font-weight: bold; margin: 20px; min-height: 50px; 
-            line-height: 1.6; color: #444; background: rgba(255,255,255,0.5);
-            padding: 15px; border-radius: 15px;
-        }
-        
-        iframe, video { border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 100%; margin-top: 15px; border: none; }
-        
-        .back-btn {
-            margin: 40px 0; padding: 12px 25px; background: #0077b6; color: white;
-            border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block;
-            transition: 0.3s; box-shadow: 0 5px 15px rgba(0,119,182,0.3);
-        }
-        .back-btn:hover { background: #ac7373; transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -73,83 +35,69 @@
     <div id="startScreen">
         <div class="big-heart" onclick="startShow()">💙</div>
         <div class="names-on-heart" id="heartNames"></div>
-        <p>اضغط على القلب الأزرق يا قمر 💎</p>
+        <p style="color:#0077b6; font-weight:bold;">اضغط على القلب لفتح المفاجأة</p>
     </div>
 
     <div class="content" id="mainContent">
-        <h2 id="toHeader" style="color: #0077b6;"></h2>
-        
-        <img id="userImage" src="" alt="مفاجأة">
-
+        <h2 id="toHeader" style="color:#0077b6;"></h2>
+        <img id="userImage" src="">
         <div id="videoContainer"></div>
-
         <div id="typewriter"></div>
-
         <div id="audioContainer"></div>
-
-        <a href="index.html" class="back-btn">اصنع مفاجأة جديدة ✨</a>
+        <a href="index.html" style="color:#ac7373; font-weight:bold; text-decoration:none; display:block; margin-top:20px;">رد المفاجأة بمثلها 💌</a>
     </div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        const from = params.get('from') || "محبك";
-        const to = params.get('to') || "حبيبي";
-        const msg = params.get('m') || "أنت أغلى ما في حياتي";
-        const video = params.get('v') || "";
-        const audio = params.get('a') || "";
-        const image = params.get('i') || "";
-
-        document.getElementById('heartNames').innerText = `${from} 💙 ${to}`;
-        document.getElementById('toHeader').innerText = `إلى: ${to} ✨`;
+        document.getElementById('heartNames').innerText = `${params.get('from') || 'محبك'} 💙 ${params.get('to') || 'حبيبي'}`;
+        document.getElementById('toHeader').innerText = `إلى: ${params.get('to') || 'حبيبي'} ✨`;
 
         function startShow() {
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-            
-            if (image) {
+
+            const img = params.get('i');
+            if(img && img !== "undefined") {
                 const imgTag = document.getElementById('userImage');
-                imgTag.src = decodeURIComponent(image);
+                imgTag.src = decodeURIComponent(img);
                 imgTag.style.display = 'block';
             }
 
-            if (audio) {
-                const audioArea = document.getElementById('audioContainer');
-                audioArea.innerHTML = `<audio id="bgMusic" autoplay loop><source src="${decodeURIComponent(audio)}" type="audio/mpeg"></audio>`;
-                document.getElementById('bgMusic').play().catch(e => console.log("Audio play deferred"));
+            const audio = params.get('a');
+            if(audio) {
+                document.getElementById('audioContainer').innerHTML = `<audio id="m" autoplay loop><source src="${decodeURIComponent(audio)}"></audio>`;
+                document.getElementById('m').play().catch(() => {});
             }
 
-            if (video) {
-                let videoArea = document.getElementById('videoContainer');
-                let vidUrl = decodeURIComponent(video);
-                
-                if (vidUrl.includes('youtube.com') || vidUrl.includes('youtu.be')) {
-                    let vidId = vidUrl.split('v=')[1]?.split('&')[0] || vidUrl.split('/').pop().split('?')[0];
-                    videoArea.innerHTML = `<iframe src="https://www.youtube.com/embed/${vidId}?autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="height:315px;"></iframe>`;
+            const video = params.get('v');
+            if(video) {
+                let vArea = document.getElementById('videoContainer');
+                let url = decodeURIComponent(video);
+                if(url.includes('youtube') || url.includes('youtu.be')) {
+                    let id = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
+                    vArea.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder="0" allow="autoplay" style="height:250px;"></iframe>`;
                 } else {
-                    videoArea.innerHTML = `<video controls autoplay style="max-height:315px;"><source src="${vidUrl}">متصفحك لا يدعم الفيديو</video>`;
+                    vArea.innerHTML = `<video controls autoplay style="max-height:250px;"><source src="${url}"></video>`;
                 }
             }
 
-            typeWriter(decodeURIComponent(msg), 0);
+            typeWriter(decodeURIComponent(params.get('m') || ""), 0);
             setInterval(createParticle, 300);
         }
 
         function typeWriter(text, i) {
             if (i < text.length) {
-                let char = text.charAt(i);
-                document.getElementById("typewriter").innerHTML += (char === '\n' ? '<br>' : char);
-                setTimeout(() => typeWriter(text, i + 1), 70);
+                document.getElementById("typewriter").innerHTML += text.charAt(i);
+                setTimeout(() => typeWriter(text, i + 1), 60);
             }
         }
 
         function createParticle() {
             const p = document.createElement('div');
             p.className = 'particle';
-            // قلوب ونجوم زرقاء وبيضاء لتناسب الثيم الجديد
-            p.innerText = ['💙', '✨', '☁️', '💎'][Math.floor(Math.random()*4)];
+            p.innerText = ['💙', '✨', '💎'][Math.floor(Math.random()*3)];
             p.style.left = Math.random() * 100 + 'vw';
-            p.style.fontSize = Math.random() * 20 + 20 + 'px';
-            p.style.opacity = Math.random();
+            p.style.fontSize = '25px';
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 6000);
         }
